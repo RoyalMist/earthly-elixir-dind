@@ -43,8 +43,6 @@ jobs:
     needs:
       - nightly
     runs-on: ubuntu-20.04
-    env:
-      MIX_ENV: prod
     steps:
       - name: Tag
         id: tagName
