@@ -1,18 +1,15 @@
 FROM earthly/dind:alpine
-ENV OTP_VERSION="24.2.1"
+ENV OTP_VERSION="24.3.2"
 ENV REBAR3_VERSION="3.18.0"
-ENV ELIXIR_VERSION="v1.13.2"
+ENV ELIXIR_VERSION="v1.13.3"
 ENV LANG=C.UTF-8
 LABEL org.opencontainers.image.version=$OTP_VERSION
 RUN set -xe \
     && OTP_DOWNLOAD_URL="https://github.com/erlang/otp/archive/OTP-${OTP_VERSION}.tar.gz" \
-    && OTP_DOWNLOAD_SHA256="2854318d12d727fc508e8fd5fe6921c0cbc7727d1183ad8f6f808585496e42d6" \
-    && REBAR3_DOWNLOAD_SHA256="cce1925d33240d81d0e4d2de2eef3616d4c17b0532ed004274f875e6607d25d2" \
     && apk add --no-cache --virtual .fetch-deps \
     curl \
     ca-certificates \
     && curl -fSL -o otp-src.tar.gz "$OTP_DOWNLOAD_URL" \
-    && echo "$OTP_DOWNLOAD_SHA256  otp-src.tar.gz" | sha256sum -c - \
     && apk add --no-cache --virtual .build-deps \
     dpkg-dev dpkg \
     gcc \
@@ -50,7 +47,6 @@ RUN set -xe \
     )" \
     && REBAR3_DOWNLOAD_URL="https://github.com/erlang/rebar3/archive/${REBAR3_VERSION}.tar.gz" \
     && curl -fSL -o rebar3-src.tar.gz "$REBAR3_DOWNLOAD_URL" \
-    && echo "${REBAR3_DOWNLOAD_SHA256}  rebar3-src.tar.gz" | sha256sum -c - \
     && mkdir -p /usr/src/rebar3-src \
     && tar -xzf rebar3-src.tar.gz -C /usr/src/rebar3-src --strip-components=1 \
     && rm rebar3-src.tar.gz \
@@ -65,7 +61,6 @@ RUN set -xe \
     && apk del .fetch-deps .build-deps
 RUN set -xe \
     && ELIXIR_DOWNLOAD_URL="https://github.com/elixir-lang/elixir/archive/${ELIXIR_VERSION}.tar.gz" \
-    && ELIXIR_DOWNLOAD_SHA256="03afed42dccf4347c4d3ae2b905134093a3ba2245d0d3098d75009a1d659ed1a" \
     && buildDeps=' \
     ca-certificates \
     curl \
@@ -73,7 +68,6 @@ RUN set -xe \
     ' \
     && apk add --no-cache --virtual .build-deps $buildDeps \
     && curl -fSL -o elixir-src.tar.gz $ELIXIR_DOWNLOAD_URL \
-    && echo "$ELIXIR_DOWNLOAD_SHA256  elixir-src.tar.gz" | sha256sum -c - \
     && mkdir -p /usr/local/src/elixir \
     && tar -xzC /usr/local/src/elixir --strip-components=1 -f elixir-src.tar.gz \
     && rm elixir-src.tar.gz \
